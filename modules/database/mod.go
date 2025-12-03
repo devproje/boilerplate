@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"git.wh64.net/devproje/devproje-boilerplate/src/config"
+	"git.wh64.net/devproje/devproje-boilerplate/config"
 	_ "github.com/lib/pq"
 )
 
@@ -72,3 +72,4 @@ func (db *Database) Destroy() error {
 }
 
 var DatabaseModule = &Database{}
+

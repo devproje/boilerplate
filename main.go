@@ -2,36 +2,46 @@ package main
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"log"
+	"io/fs"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"git.wh64.net/devproje/devproje-boilerplate/src/config"
-	"git.wh64.net/devproje/devproje-boilerplate/src/modules"
-	"git.wh64.net/devproje/devproje-boilerplate/src/modules/database"
-	"git.wh64.net/devproje/devproje-boilerplate/src/modules/sample"
+	"git.wh64.net/devproje/devproje-boilerplate/config"
+	"git.wh64.net/devproje/devproje-boilerplate/modules"
+	"git.wh64.net/devproje/devproje-boilerplate/modules/database"
+	"git.wh64.net/devproje/devproje-boilerplate/modules/sample"
+	"git.wh64.net/devproje/devproje-boilerplate/routes"
 	"github.com/devproje/commando"
 	"github.com/gin-gonic/gin"
 )
 
-func cli(args []string) {
+//go:embed public
+var static embed.FS
+
+func cli(args []string) bool {
 	var command = commando.NewCommando(args)
 	err := command.Execute()
 	if err != nil {
-		log.Println("error")
-		return
+		log.Println(err)
+		return false
 	}
+
+	return true
 }
 
 func main() {
 	var args = os.Args
 	if len(args) > 1 {
-		cli(args[1:])
-		return
+		var ok = cli(args[1:])
+		if !ok {
+			return
+		}
 	}
 
 	cnf := config.Get
@@ -41,6 +51,18 @@ func main() {
 	modules.LOADER.Insmod(sample.SampleServiceModule)
 	modules.LOADER.Load()
 
+	routes.API(app)
+
+	var staticFS, _ = fs.Sub(static, "public")
+
+	app.GET("/", func(ctx *gin.Context) {
+		ctx.FileFromFS("index.html", http.FS(staticFS))
+	})
+
+	app.NoRoute(func(ctx *gin.Context) {
+		ctx.FileFromFS("index.html", http.FS(staticFS))
+	})
+
 	var webserver = &http.Server{
 		Handler:           app,
 		ReadHeaderTimeout: 5 * time.Second,
@@ -48,7 +70,7 @@ func main() {
 	}
 
 	go func() {
-		fmt.Printf("WebServer bind at http://%s:%d\n", cnf.Host, cnf.Port)
+		log.Printf("WebServer bind at http://%s:%d\n", cnf.Host, cnf.Port)
 		if err := webserver.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %s\n", err)
 		}

@@ -23,14 +23,15 @@ func (sl *ModuleLoader) Load() {
 	var err error
 
 	for _, m := range sl.modules {
+		log.Printf("[%s] Loading module...\n", m.Name())
 		err = m.Init()
 		if err != nil {
-			log.Printf("[%s] Failed to load module", m.Name())
-			log.Printf("[%s] %v", m.Name(), err)
+			log.Printf("[%s] Failed to load module\n", m.Name())
+			log.Printf("[%s] %v\n", m.Name(), err)
 			continue
 		}
 
-		log.Printf("[%s] Loaded module", m.Name())
+		log.Printf("[%s] Loaded module\n", m.Name())
 	}
 }
 
@@ -39,16 +40,18 @@ func (sl *ModuleLoader) Unload() {
 	slices.Reverse(sl.modules)
 
 	for _, m := range sl.modules {
+		log.Printf("[%s] Unloading module...\n", m.Name())
 		err = m.Destroy()
 		if err != nil {
-			log.Printf("[%s] Failed to unload module", m.Name())
+			log.Printf("[%s] Failed to unload module\n", m.Name())
 			continue
 		}
 
-		log.Printf("[%s] Unloaded module", m.Name())
+		log.Printf("[%s] Unloaded module\n", m.Name())
 	}
 }
 
 var LOADER = &ModuleLoader{
 	modules: []ServiceModule{},
 }
+

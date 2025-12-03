@@ -16,13 +16,31 @@ type DatabaseConfig struct {
 	Password string
 }
 
+type AppInfo struct {
+	Version	  string
+	Branch	  string
+	Hash	  string
+	BuildTime string
+	GoVersion string
+	Channel	  string
+}
+
 type ConfigRaw struct {
 	Host     string
 	Port     int64
 	Database *DatabaseConfig
+	AppInfo  *AppInfo
 }
 
-var Get *ConfigRaw
+var (
+	version   string
+	branch 	  string
+	hash	  string
+	buildTime string
+	goVersion string
+
+	Get *ConfigRaw
+)
 
 func load(key string, defaults string) string {
 	var ret = os.Getenv(key)
@@ -67,5 +85,13 @@ func init() {
 			Username: dbUsername,
 			Password: dbPassword,
 		},
+		AppInfo: &AppInfo{
+			Version:   version,
+			Branch:    branch,
+			Hash:      hash,
+			BuildTime: buildTime,
+			GoVersion: goVersion,
+		},
 	}
 }
+

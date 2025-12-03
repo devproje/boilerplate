@@ -1,6 +1,17 @@
+# temporary directory
 .tmp/
+
+# ide cache
+.idea/
+.vscode/
 
 .env
 !.env.example
 
+# frontend cache
+public/
+!frontend/public/
+
+# binaries
+sample-app
 

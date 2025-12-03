@@ -121,8 +121,9 @@ func (d *Database) migrate(db *sql.DB) error {
 			return err
 		}
 
-		fmt.Printf("[%s] Applied migration: %s", d.Name(), version)
+		fmt.Printf("[%s] Applied migration: %s\n", d.Name(), version)
 	}
 
 	return nil
 }
+
