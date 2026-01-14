@@ -22,7 +22,7 @@ async fn main() {
             exit(1);
         }
     };
-    
+
     let config = Config::new();
     println!("Starting {} v{}-{} ({})", config.info.name, config.info.version, config.info.branch, config.info.hash);
     println!("Service build at: {}", config.info.build_time);
